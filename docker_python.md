@@ -99,5 +99,29 @@ docker buildでイメージ構築
 - `$ docker rmi python-docker:v1.0.0`
 - rmiコマンド=イメージ削除
 
+## コンテナとしてイメージを実行
 
+### 概要
+イメージを実行する
+`--publish [host port]:[container port]`
+`$ docker run --publish 8000:5000 python-docker`
 
+バックグラウンドとして実行
+`$ docker run -dp 8000:5000 python-docker`
+
+実行中のコンテナ一覧(停止中も含めるなら-a)
+`$ docker ps`
+
+コンテナをストップ
+`$ docker stop <container_name or container_id>`
+
+コンテナを再起動
+`$ docker restart <container_name or container_id>`
+
+コンテナを削除
+`$ docker rm <container_name or container_id>`
+
+コンテナに名前を付ける
+`$ docker run -dp 8000:5000 --name rest-server python-docker`
+
+## 開発にコンテナを使う
