@@ -35,7 +35,7 @@ python -m flask run
 ### Python用のDockerfileを作成
 
 > **Note**
-> `Dockerfileのファイル名`について 
+> 概要: `Dockerfileのファイル名`について 
 > Dockerfile.hogeやhoge.Dockerfileにすることも可能だが、その場合はfオプションが必要
 > docker build -f Dockerfile.hoge
 > プロジェクトで主となるDockerfileはデフォルトが推奨される
