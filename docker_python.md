@@ -35,14 +35,11 @@ python -m flask run
 ### Python用のDockerfileを作成
 
 > **Note**
-> 概要: `Dockerfileのファイル名`について 
-> Dockerfile.hogeやhoge.Dockerfileにすることも可能だが、その場合はfオプションが必要
-> docker build -f Dockerfile.hoge
-> プロジェクトで主となるDockerfileはデフォルトが推奨される
+> `Dockerfileのファイル名`について  
+> Dockerfile.hogeやhoge.Dockerfileにすることも可能だが、その場合はfオプションが必要  
+> docker build -f Dockerfile.hoge  
+> プロジェクトで主となるDockerfileはデフォルトが推奨される  
 
-> **Note**
-> こんな感じに書き込むと強調表示される
-> a
 
 学んだこと
 - syntaxはあらゆる記述より前に書く(コメントよりも)
