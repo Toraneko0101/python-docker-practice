@@ -40,6 +40,10 @@ python -m flask run
 > docker build -f Dockerfile.hoge
 > プロジェクトで主となるDockerfileはデフォルトが推奨される
 
+> **Note**
+> こんな感じに書き込むと強調表示される
+> a
+
 学んだこと
 - syntaxはあらゆる記述より前に書く(コメントよりも)
 - docker/dockerfile:1とすればBuildKitが自動的に構文を確認し、直近の現行バージョンを使えるようにする
