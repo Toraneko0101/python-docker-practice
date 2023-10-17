@@ -24,13 +24,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      # DockerHubにログイン
-      - name: Login to Docker Hub
+      # Github container registryにログイン
+      - name: Login to Github container registry
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         # secretsから入手
         with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
         
       # Build -> push(構築cacheを利用)
       - name: Build and push
@@ -40,7 +42,7 @@ jobs:
           context: ./python-docker/
           file: ./python-docker/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/simplewhale:latest
+          tags: ghcr.io/${{ github.repository_owner }}/simplewhale:latest
           build-args: BUILDX_BUILDER=image-builder
 
       - name: Image digest
