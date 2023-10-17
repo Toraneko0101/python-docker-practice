@@ -46,7 +46,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         env:
-          OWNER_LC = ${{ OWNER_LC }}
+          OWNER_LC=${{ OWNER_LC }}
         with:
           context: ./python-docker/
           file: ./python-docker/Dockerfile
