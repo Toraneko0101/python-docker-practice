@@ -322,5 +322,15 @@ $ docker-compose -f docker-compose.dev.yml up --build
 3. pullリクエストを減らす方向で、ワークフローを最適化
 4. 特定のバージョンのみDockerHubに送信する
 
-
+```yml
+on:
+  push:
+    tags:
+      - "v*.*.*"
+```
+サンプル
+```control
+$ git tag -a v1.0.0
+$ git push origin v1.0.0
+```
 
