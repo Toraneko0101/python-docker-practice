@@ -11,6 +11,11 @@ jobs:
       - name: Check Out Repo
         uses: actions/checkout@v2
 
+      #キャッシュの作成と復元をサポート
+      # path: キャッシュを保存するパス
+      # key: キャッシュを識別 osの種類-buildx-Githubのハッシュ値
+      # restore-keys: キャッシュを復元するキーのパターンマッチ
+      # マッチしていればイメージをダウンロードする必要もDockerHubから取得する回数も減る
       - name: Cache Docker layers
         uses: actions/cache@v2
         with:
