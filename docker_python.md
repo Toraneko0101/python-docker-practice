@@ -500,7 +500,7 @@ jobs:
         run: echo ${{ steps.docker_build.outputs.digest }}
           
     
-
+- 新しくReleaseする場合
 ```
 サンプル
 ```control

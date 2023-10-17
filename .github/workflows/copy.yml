@@ -1,4 +1,4 @@
-name: Pull-request trigger
+name: Normal Push
 on:
   push:
     branches: [ main ]
