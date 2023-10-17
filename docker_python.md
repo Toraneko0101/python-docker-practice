@@ -322,6 +322,71 @@ $ docker-compose -f docker-compose.dev.yml up --build
 3. pullリクエストを減らす方向で、ワークフローを最適化
 4. 特定のバージョンのみDockerHubに送信する
 
+### Dockerプロジェクトのセットアップ
+- ワークフローがDocker hubにアクセスできるようにする
+```
+1. Settings -> Secrets and variables -> Actions -> New Secrets
+2. DOCKER_HUB_USERNAME : <MyDockerID>
+3. https://hub.docker.com/settings/security　にアクセスし、New Access TokenでPersonal Access Tokenを入手
+4. Settings -> Secrets and variables -> Actions -> New Secrets
+5. DOCKER_HUB_ACCESS_TOKEN : <Personal Access Token>
+```
+
+### GitHub Actions ワークフローのセットアップ
+1. .github/workflowsに移動
+2. ymlファイルを作成
+```yml
+name: CI to Docker Hub
+# push時に、Hubに送信
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # $GITHUB_WORKSPACE以下のrepoを調べ、ワークフローがアクセスできるようにする
+      - name: Check Out Repo
+        uses: actions/checkout@v2
+
+      #キャッシュの作成と復元をサポート
+      # path: キャッシュを保存するパス
+      # key: キャッシュを識別 osの種類-buildx-Githubのハッシュ値
+      # restore-keys: キャッシュを復元するキーのパターンマッチ
+      # マッチしていればイメージをダウンロードする必要もDockerHubから取得する回数も減る
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      # DockerHubにログイン
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        # secretsから入手
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+        
+      # Build -> push(構築cacheを利用)
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./python-docker/
+          file: ./python-docker/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/simplewhale:latest
+          build-args: BUILDX_BUILDER=image-builder
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+```
+
+### タグ付けされたバージョンのみ送信する
+- Docker Hub にタグ付けされたバージョンがリリースされた時、最新版かどうかを確認するなどの用途で使用
 ```yml
 on:
   push:
@@ -333,3 +398,5 @@ on:
 $ git tag -a v1.0.0
 $ git push origin v1.0.0
 ```
+
+
