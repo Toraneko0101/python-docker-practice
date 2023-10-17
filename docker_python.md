@@ -498,12 +498,11 @@ jobs:
           build-args: BUILDX_BUILDER=image-builder
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
-          
-    
-- 新しくReleaseする場合
+
 ```
-サンプル
+- 新しくReleaseする場合
 ```control
+
 $ git tag -a v1.0.0
 $ git push origin v1.0.0
 ```
