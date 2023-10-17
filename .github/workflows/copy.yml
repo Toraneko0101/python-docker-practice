@@ -49,7 +49,7 @@ jobs:
           context: ./python-docker/
           file: ./python-docker/Dockerfile
           push: true
-          tags: ghcr.io/${{ OWNER_LC }}/simplewhale:latest
+          tags: ghcr.io/$OWNER_LC/simplewhale:latest
           build-args: BUILDX_BUILDER=image-builder
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
