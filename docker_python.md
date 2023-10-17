@@ -388,6 +388,7 @@ jobs:
 ### タグ付けされたバージョンのみ送信する
 - 指定したversionのみ、DockerHubに送信する
 - 通常のpushの場合、ghcr.ioに反映する
+- Docker-hubへのpullは制限があるということなので
 ```yml
 name: CI to Docker Hub
 # リリース用にデプロイされるバージョンのタグがプッシュされたときに実行
