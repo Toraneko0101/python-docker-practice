@@ -37,7 +37,7 @@ jobs:
       # lowercase
       - name: set lower case owner name
         run: |
-          echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+          echo "OWNERLC=${OWNER,,}" >>${GITHUB_ENV}
         env:
           OWNER: '${{ github.repository_owner }}'
       
@@ -49,7 +49,7 @@ jobs:
           context: ./python-docker/
           file: ./python-docker/Dockerfile
           push: true
-          tags: ghcr.io/$OWNER_LC/simplewhale:latest
+          tags: ghcr.io/${{ OWNERLC }}/simplewhale:latest
           build-args: BUILDX_BUILDER=image-builder
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
