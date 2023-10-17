@@ -386,12 +386,120 @@ jobs:
 ```
 
 ### タグ付けされたバージョンのみ送信する
-- Docker Hub にタグ付けされたバージョンがリリースされた時、最新版かどうかを確認するなどの用途で使用
+- 指定したversionのみ、DockerHubに送信する
+- 通常のpushの場合、ghcr.ioに反映する
 ```yml
-on:
+name: CI to Docker Hub
+# リリース用にデプロイされるバージョンのタグがプッシュされたときに実行
+# ex) git push origin v1.0.2
   push:
     tags:
-      - "v*.*.*"
+      - "v1.*.*"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # $GITHUB_WORKSPACE以下のrepoを調べ、ワークフローがアクセスできるようにする
+      - name: Check Out Repo
+        uses: actions/checkout@v2
+
+      #キャッシュの作成と復元をサポート
+      # path: キャッシュを保存するパス
+      # key: キャッシュを識別 osの種類-buildx-Githubのハッシュ値
+      # restore-keys: キャッシュを復元するキーのパターンマッチ
+      # マッチしていればイメージをダウンロードする必要もDockerHubから取得する回数も減る
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      # DockerHubにログイン
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        # secretsから入手
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+        
+      # Build -> push(構築cacheを利用)
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./python-docker/
+          file: ./python-docker/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/simplewhale:latest
+          build-args: BUILDX_BUILDER=image-builder
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+```
+
+```yml
+# 主に通常のpushイベントに対応(ただしpull_requestは除く)
+name: Github Trigger
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      # $GITHUB_WORKSPACE以下のrepoを調べ、ワークフローがアクセスできるようにする
+      - name: Check Out Repo
+        uses: actions/checkout@v2
+
+      #キャッシュの作成と復元をサポート
+      # path: キャッシュを保存するパス
+      # key: キャッシュを識別 osの種類-buildx-Githubのハッシュ値
+      # restore-keys: キャッシュを復元するキーのパターンマッチ
+      # マッチしていればイメージをダウンロードする必要もDockerHubから取得する回数も減る
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      # Github container registryにログイン
+      - name: Login to Github container registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        # secretsから入手
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # lowercase
+      - name: set lower case owner name
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+        env:
+          OWNER: '${{ github.repository_owner }}'
+      
+      # Build -> push(構築cacheを利用)
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./python-docker/
+          file: ./python-docker/Dockerfile
+          push: true
+          tags: ghcr.io/${{ env.OWNER_LC }}/simplewhale:latest
+          build-args: BUILDX_BUILDER=image-builder
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+          
+    
+
 ```
 サンプル
 ```control
