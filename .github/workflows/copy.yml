@@ -1,5 +1,4 @@
 name: Pull-request trigger
-# 特定のタグがある場合のみHubに送信
 on:
   push:
     branches: [ main ]
