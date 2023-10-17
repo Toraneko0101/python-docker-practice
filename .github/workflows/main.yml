@@ -3,7 +3,7 @@ name: New Release Docker Hub
 on:
   push:
     tags:
-      - "v1.0.*"
+      - "v*.*.*"
 jobs:
   build:
     runs-on: ubuntu-latest
