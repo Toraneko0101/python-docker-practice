@@ -38,13 +38,13 @@ jobs:
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
+        run:
+          test = ghcr.io/${{ github.repository_owner }}/simplewhale:latest
         with:
           context: ./python-docker/
           file: ./python-docker/Dockerfile
           push: true
-          tags: ghcr.io/${OWNER,,}/simplewhale:latest
-          env:
-            OWNER: ${{ github.repository_owner }}
+          tags: $test
           build-args: BUILDX_BUILDER=image-builder
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
