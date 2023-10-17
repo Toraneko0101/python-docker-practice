@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissons:
+    permissions:
       packages: write
     steps:
       # $GITHUB_WORKSPACE以下のrepoを調べ、ワークフローがアクセスできるようにする
